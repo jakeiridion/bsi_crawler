@@ -19,7 +19,7 @@ while True:
             return doc.select_one(".isFirstInSlot").text
 
         def fetch(self):
-            ges = doc.find_all(["h4", "p", "h2", "li", "h3"])  # ,li für listen
+            ges = doc.find_all(["h4", "p", "h2", "li", "h3"])
             fin = []
             fin2 = []
 
@@ -41,18 +41,15 @@ while True:
             while True:
                 if fin2[-1][0:5] != "<h2>4":
                     fin2.pop()
-
                 else:
                     fin2.pop()
                     break
 
             while True:
-                if fin2[0][0:4] == "<h3>":
+                if fin2[0][0:4] != "<h4>":
                     fin2.pop(0)
-
                 else:
                     break
-
             return fin2
 
         def write(self):
@@ -94,3 +91,4 @@ while True:
     fetcher.write()
     print("Done!")
     print(str(fetcher.get_title()) + ".csv has been generated\n")
+    input("Press Enter to continue!")
