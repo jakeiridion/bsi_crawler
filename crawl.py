@@ -57,9 +57,14 @@ while True:
             title = self.get_title()
             headerTrue = 0
             test = 0
+            firsth = 0
+            samelist = 0
 
             with open(str(title) + ".csv", "w") as csv_file:
                 for line in fin2:
+
+                    # Header <h3> / <h4>
+
                     if line[0:4] == "<h3>" or test == 1:
                         headerTrue = 0
                         if test == 1:
@@ -70,25 +75,44 @@ while True:
                         continue
 
                     if line[0:4] == "<h4>":
+                        if firsth == 0:
+                            firsth = 1
+                        else:
+                            csv_file.write("\n\n")
+
                         splited = line.strip("<h4>").strip("</h4>").strip().split(" ")
                         s_number = splited[0]
                         s_title = " ".join(splited[1:])
 
-                        csv_file.write('"' + s_number + '","' + s_title + '",')
                         prevnumber = s_number
                         prevtitle = s_title
                         headerTrue = 0
 
+                    # Paragraphen <p>
+
                     if line[0:3] == "<p>":
+                        sentences = line.strip("<p>").strip("</p>").strip().split(".")
+
                         if headerTrue == 1:
-                            csv_file.write('"' + prevnumber + '","' + prevtitle + '",')
-                        csv_file.write('"' + line.strip("<p>").strip("</p>") + '"\n')
+                            csv_file.write("\n")
+
+                        for sentenc in sentences[:-1]:
+                            csv_file.write('"' + prevnumber + '","' + prevtitle + '","' + sentenc.strip() + '."\n')
+
                         headerTrue = 1
 
+                    # Listen <li>
+
                     if line[0:4] == "<li>":
+                        if samelist == 0:
+                            csv_file.write("\n")
+
                         if headerTrue == 1:
-                            csv_file.write('"' + prevnumber + '","' + prevtitle + '",')
-                        csv_file.write('"' + line.strip("<li>").strip("</li>") + '"\n')
+                            samelist = 1
+
+                        sentences = line.strip("<li>").strip("</li>").strip()
+                        csv_file.write('"' + prevnumber + '","' + prevtitle + '","' + sentences + '"\n')
+
                         headerTrue = 1
 
 
