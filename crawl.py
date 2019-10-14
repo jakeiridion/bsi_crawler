@@ -70,19 +70,24 @@ while True:
                         continue
 
                     if line[0:4] == "<h4>":
-                        csv_file.write('"' + line.strip("<h4>").strip("</h4>") + '",')
-                        prevheader = line
+                        splited = line.strip("<h4>").strip("</h4>").strip().split(" ")
+                        s_number = splited[0]
+                        s_title = " ".join(splited[1:])
+
+                        csv_file.write('"' + s_number + '","' + s_title + '",')
+                        prevnumber = s_number
+                        prevtitle = s_title
                         headerTrue = 0
 
                     if line[0:3] == "<p>":
                         if headerTrue == 1:
-                            csv_file.write('"' + prevheader.strip("<h4>").strip("</h4>") + '",')
+                            csv_file.write('"' + prevnumber + '","' + prevtitle + '",')
                         csv_file.write('"' + line.strip("<p>").strip("</p>") + '"\n')
                         headerTrue = 1
 
                     if line[0:4] == "<li>":
                         if headerTrue == 1:
-                            csv_file.write('"' + prevheader.strip("<h4>").strip("</h4>") + '",')
+                            csv_file.write('"' + prevnumber + '","' + prevtitle + '",')
                         csv_file.write('"' + line.strip("<li>").strip("</li>") + '"\n')
                         headerTrue = 1
 
@@ -91,4 +96,3 @@ while True:
     fetcher.write()
     print("Done!")
     print(str(fetcher.get_title()) + ".csv has been generated\n")
-    input("Press Enter to continue!")
