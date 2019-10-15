@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import time
+from datetime import date
 
 while True:
     user_agent = {'User-agent': 'Mozilla/5.0'}
@@ -12,6 +13,9 @@ while True:
     time.sleep(1)
     r = requests.get(url, headers=user_agent)
     doc = BeautifulSoup(r.text, "html.parser")
+
+    today = date.today()
+    title_date = str(today.strftime("%d.%m.%Y"))
 
 
     class Fetcher():
@@ -46,7 +50,7 @@ while True:
                     break
 
             while True:
-                if fin2[0][0:4] != "<h4>":
+                if fin2[0][0:4] != "<h4>" and fin2[0][0:7] == "<h3>3.1":
                     fin2.pop(0)
                 else:
                     break
@@ -56,21 +60,24 @@ while True:
             fin2 = self.fetch()
             title = self.get_title()
             headerTrue = 0
-            test = 0
+            skip_useless_text = 0
             firsth = 0
-            samelist = 0
+            h3 = ""
 
-            with open(str(title) + ".csv", "w") as csv_file:
+            with open(str(title) + " -" + title_date + "-.csv", "w") as csv_file:
                 for line in fin2:
 
                     # Header <h3> / <h4>
 
-                    if line[0:4] == "<h3>" or test == 1:
+                    if line[0:4] == "<h3>" or skip_useless_text == 1:
+                        if line[0:4] == "<h3>":
+                            h3 = line.strip("<h3>").strip("</h3>").strip()
                         headerTrue = 0
-                        if test == 1:
-                            test = 0
+
+                        if skip_useless_text == 1:
+                            skip_useless_text = 0
                         else:
-                            test = 1
+                            skip_useless_text = 1
 
                         continue
 
@@ -80,7 +87,7 @@ while True:
                         else:
                             csv_file.write("\n\n")
 
-                        splited = line.strip("<h4>").strip("</h4>").strip().split(" ")
+                        splited = line.strip("<h4>").strip("</h4>").strip().strip(".").split(" ")
                         s_number = splited[0]
                         s_title = " ".join(splited[1:])
 
@@ -91,29 +98,29 @@ while True:
                     # Paragraphen <p>
 
                     if line[0:3] == "<p>":
-                        sentences = line.strip("<p>").strip("</p>").strip().split(".")
+                        sentences = line.strip("<p>").strip("</p>").strip().strip(".").split(".")
 
                         if headerTrue == 1:
                             csv_file.write("\n")
 
-                        for sentenc in sentences[:-1]:
-                            csv_file.write('"' + prevnumber + '","' + prevtitle + '","' + sentenc.strip() + '."\n')
+                        for sentenc in sentences:
+                            csv_file.write(
+                                '"3' + h3 + '","' + prevnumber + '","' + prevtitle + '","' + sentenc.strip() + '."\n')
 
                         headerTrue = 1
 
                     # Listen <li>
 
                     if line[0:4] == "<li>":
-                        if samelist == 0:
+                        if prevline[0:4] != "<li>":
                             csv_file.write("\n")
 
-                        if headerTrue == 1:
-                            samelist = 1
-
-                        sentences = line.strip("<li>").strip("</li>").strip()
-                        csv_file.write('"' + prevnumber + '","' + prevtitle + '","' + sentences + '"\n')
+                        sentences = line.strip("<li>").strip("</li>").strip().strip(".")
+                        csv_file.write('"3' + h3 + '","' + prevnumber + '","' + prevtitle + '","' + sentences + '"\n')
 
                         headerTrue = 1
+
+                    prevline = line
 
 
     fetcher = Fetcher()
