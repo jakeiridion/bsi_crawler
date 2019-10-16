@@ -42,6 +42,7 @@ while True:
                 fin2.append(i)
 
             # make all the useless stuff pop
+
             while True:
                 if fin2[-1][0:5] != "<h2>4":
                     fin2.pop()
@@ -106,7 +107,6 @@ while True:
                         for sentenc in sentences:
                             csv_file.write(
                                 '"3' + h3 + '","' + prevnumber + '","' + prevtitle + '","' + sentenc.strip() + '."\n')
-
                         headerTrue = 1
 
                     # Listen <li>
@@ -127,3 +127,4 @@ while True:
     fetcher.write()
     print("Done!")
     print(str(fetcher.get_title()) + ".csv has been generated\n")
+    
