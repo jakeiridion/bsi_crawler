@@ -51,7 +51,7 @@ while True:
                     break
 
             while True:
-                if fin2[0][0:4] != "<h4>" and fin2[0][0:7] == "<h3>3.1":
+                if fin2[0][0:4] != "<h4>" and fin2[0][0:7] != "<h3>3.1":
                     fin2.pop(0)
                 else:
                     break
@@ -64,6 +64,7 @@ while True:
             skip_useless_text = 0
             firsth = 0
             h3 = ""
+            begin = 0
 
             with open(str(title) + " -" + title_date + "-.csv", "w") as csv_file:
                 for line in fin2:
@@ -71,6 +72,11 @@ while True:
                     # Header <h3> / <h4>
 
                     if line[0:4] == "<h3>" or skip_useless_text == 1:
+                        if begin == 0:
+                            h3 = line.strip("<h3>").strip("</h3>").strip()
+                            begin = 1
+                            continue
+
                         if line[0:4] == "<h3>":
                             h3 = line.strip("<h3>").strip("</h3>").strip()
                         headerTrue = 0
@@ -127,4 +133,3 @@ while True:
     fetcher.write()
     print("Done!")
     print(str(fetcher.get_title()) + ".csv has been generated\n")
-    
