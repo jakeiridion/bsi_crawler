@@ -65,6 +65,8 @@ while True:
             firsth = 0
             h3 = ""
             begin = 0
+            klammerliste = []
+            sameklammer = 0
 
             with open(str(title) + " -" + title_date + "-.csv", "w") as csv_file:
                 for line in fin2:
@@ -111,6 +113,17 @@ while True:
                             csv_file.write("\n")
 
                         for sentenc in sentences:
+                            if ("(" in sentenc and ")" not in sentenc) or sameklammer == 1:
+                                sameklammer = 1
+                                klammerliste.append(sentenc)
+                                if ")" in sentenc:
+                                    csv_file.write('"3' + h3 + '","' + prevnumber + '","' + prevtitle + '","' + ".".join(klammerliste).strip() + '."\n')
+                                    sameklammer = 0
+                                    klammerliste = []
+                                    break
+                                else:
+                                    continue
+
                             csv_file.write(
                                 '"3' + h3 + '","' + prevnumber + '","' + prevtitle + '","' + sentenc.strip() + '."\n')
                         headerTrue = 1
